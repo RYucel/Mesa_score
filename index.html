@@ -1,0 +1,309 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MESA 10 Yıllık Kalp Hastalığı Risk Hesaplayıcı</title>
+    <style>
+        /* Genel Stil Kuralları */
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            background-color: #f4f7f6;
+            margin: 0;
+            padding: 20px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+        }
+
+        /* Ana Konteyner */
+        .container {
+            background-color: #ffffff;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+            max-width: 600px;
+            width: 100%;
+        }
+
+        h1 {
+            color: #2c3e50;
+            text-align: center;
+            margin-bottom: 25px;
+            font-size: 1.8em;
+        }
+
+        /* Form Elemanları */
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 8px;
+            color: #34495e;
+            font-weight: 600;
+        }
+
+        input[type="number"],
+        select {
+            width: 100%;
+            padding: 12px;
+            border: 1px solid #bdc3c7;
+            border-radius: 5px;
+            box-sizing: border-box;
+            font-size: 1em;
+        }
+        
+        input[type="number"]:focus,
+        select:focus {
+            outline: none;
+            border-color: #3498db;
+            box-shadow: 0 0 5px rgba(52, 152, 219, 0.5);
+        }
+
+        .radio-group label {
+            display: inline-block;
+            margin-right: 15px;
+            font-weight: normal;
+        }
+        .radio-group input[type="radio"] {
+            margin-right: 5px;
+        }
+
+        /* Hesapla Butonu */
+        button {
+            width: 100%;
+            padding: 15px;
+            background-color: #27ae60;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            font-size: 1.2em;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+
+        button:hover {
+            background-color: #229954;
+        }
+
+        /* Sonuç Alanı */
+        #sonuc-alani {
+            margin-top: 25px;
+            padding: 20px;
+            background-color: #e8f6ef;
+            border: 1px solid #27ae60;
+            border-radius: 5px;
+            text-align: center;
+            display: none; /* Başlangıçta gizli */
+        }
+
+        #sonuc-alani h2 {
+            margin-top: 0;
+            color: #27ae60;
+        }
+        
+        #sonuc-alani p {
+            font-size: 1.1em;
+            color: #2c3e50;
+            line-height: 1.6;
+        }
+
+        /* Uyarı Metni */
+        .disclaimer {
+            text-align: center;
+            margin-top: 20px;
+            font-size: 0.9em;
+            color: #7f8c8d;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <h1>MESA 10 Yıllık KKH Risk Hesaplayıcı</h1>
+        <form id="risk-form">
+            <div class="form-group">
+                <label for="yas">Yaş (45-84 arası)</label>
+                <input type="number" id="yas" required>
+            </div>
+
+            <div class="form-group">
+                <label for="cinsiyet">Cinsiyet</label>
+                <select id="cinsiyet" required>
+                    <option value="erkek">Erkek</option>
+                    <option value="kadin">Kadın</option>
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label for="irk">Irk/Etnik Köken</label>
+                <select id="irk" required>
+                    <option value="beyaz">Beyaz (Non-Hispanik)</option>
+                    <option value="cinli">Çinli</option>
+                    <option value="siyahi">Siyahi</option>
+                    <option value="hispanik">Hispanik</option>
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label for="toplam_kolesterol">Toplam Kolesterol (mg/dL)</label>
+                <input type="number" id="toplam_kolesterol" required>
+            </div>
+
+            <div class="form-group">
+                <label for="hdl_kolesterol">HDL Kolesterol (mg/dL)</label>
+                <input type="number" id="hdl_kolesterol" required>
+            </div>
+
+            <div class="form-group">
+                <label for="sistolik_tansiyon">Sistolik Kan Basıncı (Büyük Tansiyon, mmHg)</label>
+                <input type="number" id="sistolik_tansiyon" required>
+            </div>
+
+            <div class="form-group radio-group">
+                <label>Tansiyon ilacı kullanıyor musunuz?</label><br>
+                <label><input type="radio" name="tansiyon_tedavisi" value="evet" required> Evet</label>
+                <label><input type="radio" name="tansiyon_tedavisi" value="hayir"> Hayır</label>
+            </div>
+
+            <div class="form-group radio-group">
+                <label>Diyabetiniz var mı?</label><br>
+                <label><input type="radio" name="diyabet" value="evet" required> Evet</label>
+                <label><input type="radio" name="diyabet" value="hayir"> Hayır</label>
+            </div>
+
+            <div class="form-group radio-group">
+                <label>Sigara kullanıyor musunuz?</label><br>
+                <label><input type="radio" name="sigara" value="evet" required> Evet</label>
+                <label><input type="radio" name="sigara" value="hayir"> Hayır</label>
+            </div>
+
+            <div class="form-group radio-group">
+                <label>Ailenizde (anne, baba, kardeş) kalp krizi öyküsü var mı?</label><br>
+                <label><input type="radio" name="aile_oykusu" value="evet" required> Evet</label>
+                <label><input type="radio" name="aile_oykusu" value="hayir"> Hayır</label>
+            </div>
+            
+            <div class="form-group">
+                <label for="kalsiyum_skoru">Koroner Arter Kalsiyum (CAC) Skoru (Biliyorsanız giriniz)</label>
+                <input type="number" id="kalsiyum_skoru">
+            </div>
+
+            <button type="button" onclick="hesapla()">Riski Hesapla</button>
+        </form>
+
+        <div id="sonuc-alani">
+            <h2>Hesaplanan Risk Değerleriniz</h2>
+            <p id="sonuc-metni"></p>
+        </div>
+
+        <p class="disclaimer">
+            Bu araç yalnızca bilgilendirme amaçlıdır ve tıbbi bir teşhis veya tavsiye yerine geçmez. Lütfen sonuçları ve kalp sağlığınızı değerlendirmek için mutlaka bir hekime danışınız.
+        </p>
+    </div>
+
+    <script>
+        function hesapla() {
+            // 1. FORM VERİLERİNİ TOPLAMA
+            const yas = parseInt(document.getElementById('yas').value);
+            const cinsiyet = document.getElementById('cinsiyet').value;
+            const irk = document.getElementById('irk').value;
+            const toplam_kolesterol = parseInt(document.getElementById('toplam_kolesterol').value);
+            const hdl_kolesterol = parseInt(document.getElementById('hdl_kolesterol').value);
+            const sistolik_tansiyon = parseInt(document.getElementById('sistolik_tansiyon').value);
+            const tansiyon_tedavisi = document.querySelector('input[name="tansiyon_tedavisi"]:checked')?.value;
+            const diyabet = document.querySelector('input[name="diyabet"]:checked')?.value;
+            const sigara = document.querySelector('input[name="sigara"]:checked')?.value;
+            const aile_oykusu = document.querySelector('input[name="aile_oykusu"]:checked')?.value;
+            const kalsiyum_skoru_input = document.getElementById('kalsiyum_skoru').value;
+            const kalsiyum_skoru = kalsiyum_skoru_input ? parseInt(kalsiyum_skoru_input) : null;
+
+            // Form validasyonu
+            if (!yas || !cinsiyet || !irk || !toplam_kolesterol || !hdl_kolesterol || !sistolik_tansiyon || !tansiyon_tedavisi || !diyabet || !sigara || !aile_oykusu) {
+                alert("Lütfen kalsiyum skoru dışındaki tüm alanları doldurunuz.");
+                return;
+            }
+
+            // 2. MESA SKORU HESAPLAMA MANTIĞI
+            
+            // Beta Katsayıları (Tablo 2'den)
+            const katsayilar = {
+                'yas': 0.0455, 'cinsiyet_erkek': 0.7496, 'irk_cinli': -0.5055, 'irk_siyahi': -0.2111,
+                'irk_hispanik': -0.1900, 'toplam_kolesterol': 0.0053, 'hdl_kolesterol': -0.0140,
+                'sistolik_tansiyon': 0.0085, 'tansiyon_tedavisi_evet': 0.3381, 'diyabet_evet': 0.5168,
+                'sigara_evet': 0.4732, 'aile_oykusu_evet': 0.4522
+            };
+
+            const katsayilar_cac = {
+                'yas': 0.0172, 'cinsiyet_erkek': 0.4079, 'irk_cinli': -0.3475, 'irk_siyahi': 0.0353,
+                'irk_hispanik': -0.0222, 'toplam_kolesterol': 0.0043, 'hdl_kolesterol': -0.0114,
+                'sistolik_tansiyon': 0.0066, 'tansiyon_tedavisi_evet': 0.2278, 'diyabet_evet': 0.3892,
+                'sigara_evet': 0.3717, 'aile_oykusu_evet': 0.3239, 'ln_cac_plus_1': 0.2743
+            };
+
+            // Beta Toplamını Hesaplama Fonksiyonu
+            function getBetaToplami(veri, katsayi_listesi) {
+                let beta_toplami = 0;
+                beta_toplami += veri.yas * katsayi_listesi.yas;
+                if (veri.cinsiyet === 'erkek') beta_toplami += katsayi_listesi.cinsiyet_erkek;
+                if (veri.irk === 'cinli') beta_toplami += katsayi_listesi.irk_cinli;
+                if (veri.irk === 'siyahi') beta_toplami += katsayi_listesi.irk_siyahi;
+                if (veri.irk === 'hispanik') beta_toplami += katsayi_listesi.irk_hispanik;
+                beta_toplami += veri.toplam_kolesterol * katsayi_listesi.toplam_kolesterol;
+                beta_toplami += veri.hdl_kolesterol * katsayi_listesi.hdl_kolesterol;
+                beta_toplami += veri.sistolik_tansiyon * katsayi_listesi.sistolik_tansiyon;
+                if (veri.tansiyon_tedavisi === 'evet') beta_toplami += katsayi_listesi.tansiyon_tedavisi_evet;
+                if (veri.diyabet === 'evet') beta_toplami += katsayi_listesi.diyabet_evet;
+                if (veri.sigara === 'evet') beta_toplami += katsayi_listesi.sigara_evet;
+                if (veri.aile_oykusu === 'evet') beta_toplami += katsayi_listesi.aile_oykusu_evet;
+                if (veri.kalsiyum_skoru !== null && katsayi_listesi.ln_cac_plus_1) {
+                    beta_toplami += Math.log(veri.kalsiyum_skoru + 1) * katsayi_listesi.ln_cac_plus_1;
+                }
+                return beta_toplami;
+            }
+            
+            // Hasta verilerini bir objede toplama
+            const hasta_verisi = {
+                yas, cinsiyet, irk, toplam_kolesterol, hdl_kolesterol, sistolik_tansiyon,
+                tansiyon_tedavisi, diyabet, sigara, aile_oykusu, kalsiyum_skoru
+            };
+            
+            // a) CAC olmadan risk hesaplama
+            const beta_toplami_temel = getBetaToplami(hasta_verisi, katsayilar);
+            const baseline_survival_temel = 0.99963;
+            const risk_temel = (1 - Math.pow(baseline_survival_temel, Math.exp(beta_toplami_temel))) * 100;
+
+            let sonucHTML = `
+                <strong>Koroner Arter Kalsiyum Skoru OLMADAN</strong> 10 yıllık KKH riskiniz: 
+                <strong>%${risk_temel.toFixed(1)}</strong>
+                <br><br>
+            `;
+            
+            // b) CAC ile risk hesaplama (eğer skor girildiyse)
+            if (kalsiyum_skoru !== null) {
+                const beta_toplami_cac_li = getBetaToplami(hasta_verisi, katsayilar_cac);
+                const baseline_survival_cac_li = 0.99833;
+                const risk_cac_li = (1 - Math.pow(baseline_survival_cac_li, Math.exp(beta_toplami_cac_li))) * 100;
+                
+                sonucHTML += `
+                    <strong>Koroner Arter Kalsiyum Skoru (${kalsiyum_skoru}) DAHİL EDİLDİĞİNDE</strong> 10 yıllık KKH riskiniz: 
+                    <strong>%${risk_cac_li.toFixed(1)}</strong>
+                `;
+            } else {
+                 sonucHTML += `Kalsiyum skoru girmediğiniz için bu değere dayalı daha hassas risk hesaplaması yapılamamıştır.`;
+            }
+
+            // 3. SONUCU EKRANDA GÖSTERME
+            const sonucAlani = document.getElementById('sonuc-alani');
+            const sonucMetni = document.getElementById('sonuc-metni');
+            
+            sonucMetni.innerHTML = sonucHTML;
+            sonucAlani.style.display = 'block';
+        }
+    </script>
+
+</body>
+</html>
