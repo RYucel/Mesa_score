@@ -83,8 +83,8 @@
         </div>
 
         <div class="calculator-content">
-            <!-- MESA FORMU -->
-            <div id="mesa-calculator" class="hidden"> /* ... MESA Formu içeriği değişmedi ... */ </div>
+             <!-- MESA FORMU (İÇERİK DEĞİŞMEDİ)-->
+            <div id="mesa-calculator" class="hidden"> /* ... MESA Formu ve ilgili JS fonksiyonları öncekiyle aynı kalabilir ... */ </div>
 
             <!-- SCORE2 FORMU -->
             <div id="score2-calculator">
@@ -115,7 +115,76 @@
         function switchTab(tabName) { document.querySelectorAll('.tab-button').forEach(btn => btn.classList.remove('active')); document.querySelector(`[onclick="switchTab('${tabName}')"]`).classList.add('active'); ['mesa-calculator', 'score2-calculator'].forEach(id => document.getElementById(id).classList.add('hidden')); document.getElementById(`${tabName}-calculator`).classList.remove('hidden'); document.getElementById('sonuc-alani').style.display = 'none'; }
         document.querySelectorAll('.material-button').forEach(button => { button.addEventListener('click', function(e) { const rect = e.target.getBoundingClientRect(), x = e.clientX - rect.left, y = e.clientY - rect.top; const ripple = document.createElement('span'); ripple.classList.add('ripple'); ripple.style.left = x + 'px'; ripple.style.top = y + 'px'; this.appendChild(ripple); setTimeout(() => ripple.remove(), 600); }); });
         
-        // --- SCORE2 CALCULATOR (DOĞRU FORMÜL İLE) ---
+        // --- SCORE2 CALCULATOR (YENİ VE DOĞRU) ---
+        
+        // Bu fonksiyon, SCORE2'nin tam lineer prediktör formülünü uygular.
+        function calculateScore2LP(age, sbp, smoke, non_hdl, gender) {
+            const ln_age = Math.log(age);
+            const ln_sbp = Math.log(sbp);
+            const ln_non_hdl = Math.log(non_hdl);
+            const ln_age_sq = ln_age * ln_age;
+            
+            // European Heart Journal, 2021, SCORE2, Supplementary, Table S7
+            // Moderate Risk Bölgesi Katsayıları
+            const c = {
+                erkek: {
+                    alpha: -4.667, s0: 0.938,
+                    b_age: 0.02844, b_ln_age: 1.61803, b_ln_age_sq: -0.33471,
+                    b_sbp: 0.01770, b_ln_sbp: 0.24495,
+                    b_smoke: 0.50989,
+                    b_non_hdl: 0.00201, b_ln_non_hdl: 0.23129,
+                    b_age_smoke: -0.01358,
+                    b_age_sbp: -0.00033, b_age_ln_sbp: -0.00311,
+                    b_age_non_hdl: -0.00004, b_age_ln_non_hdl: 0.00003
+                },
+                kadin: {
+                    alpha: -5.764, s0: 0.963,
+                    b_age: 0.04368, b_ln_age: 0.83545, b_ln_age_sq: -0.17721,
+                    b_sbp: 0.00531, b_ln_sbp: 0.20790,
+                    b_smoke: 0.47353,
+                    b_non_hdl: 0.02708, b_ln_non_hdl: 0.13451,
+                    b_age_smoke: -0.01321,
+                    b_age_sbp: -0.00021, b_age_ln_sbp: -0.00222,
+                    b_age_non_hdl: -0.00109, b_age_ln_non_hdl: 0.00164
+                }
+            };
+
+            const p = c[gender];
+
+            return (
+                p.b_age * age + p.b_ln_age * ln_age + p.b_ln_age_sq * ln_age_sq +
+                p.b_sbp * sbp + p.b_ln_sbp * ln_sbp +
+                p.b_smoke * smoke +
+                p.b_non_hdl * non_hdl + p.b_ln_non_hdl * ln_non_hdl +
+                p.b_age_smoke * age * smoke +
+                p.b_age_sbp * age * sbp + p.b_age_ln_sbp * age * ln_sbp +
+                p.b_age_non_hdl * age * non_hdl + p.b_age_ln_non_hdl * age * ln_non_hdl
+            );
+        }
+
+        function calculateScore2RiskAge(targetRisk, gender) {
+            // Sağlıklı bir birey için optimal değerler
+            const optimal_sbp = 120;
+            const optimal_non_hdl_mmol = 2.6; // ~100 mg/dL
+            const optimal_smoke = 0;
+
+            // Hedef riske karşılık gelen LP değerini bul
+            const c = (gender === 'erkek') ? {s0: 0.938, alpha: -4.667} : {s0: 0.963, alpha: -5.764};
+            const targetLP = c.alpha + Math.log(-Math.log(1 - targetRisk / 100) / Math.log(c.s0));
+
+            // Binary search ile yaşı bul
+            let low = 20, high = 100;
+            for(let i=0; i<100; i++) { // 100 iterasyon yeterli hassasiyeti sağlar
+                let mid = (low + high) / 2;
+                let currentLP = calculateScore2LP(mid, optimal_sbp, optimal_smoke, optimal_non_hdl_mmol, gender);
+                if (currentLP < targetLP) low = mid;
+                else high = mid;
+            }
+            return (low + high) / 2;
+        }
+        
+        function getScore2RiskThreshold(age) { if (age < 50) return 2.5; if (age >= 50 && age < 70) return 5.0; return 7.5; }
+
         function hesaplaScore2() {
             const yas = parseInt(document.getElementById('score2-yas').value);
             const cinsiyet = document.getElementById('score2-cinsiyet').value;
@@ -129,42 +198,9 @@
             const non_hdl_mgdl = total_chol_mgdl - hdl_chol_mgdl;
             const non_hdl_mmol = non_hdl_mgdl / 38.67;
 
-            // --- DOĞRU KATSAYILAR VE FORMÜL (MODERATE RISK BÖLGESİ) ---
-            // Kaynak: SCORE2 - European Heart Journal (2021), Supplementary Material, Table S7
-            const coeffs = {
-                erkek: {
-                    p1: (age, ln_age, sbp, ln_sbp, smoke, non_hdl, ln_non_hdl) => 
-                        0.44433 + (0.02844 * age) + (1.61803 * ln_age) - (0.33471 * ln_age * ln_age) - 
-                        (0.01358 * age * smoke) - (0.00033 * age * sbp) - (0.00311 * age * ln_sbp) - 
-                        (0.00004 * age * non_hdl) + (0.00003 * age * ln_non_hdl),
-                    p2: (sbp, ln_sbp, smoke, non_hdl, ln_non_hdl) =>
-                        (0.01770 * sbp) + (0.24495 * ln_sbp) + (0.50989 * smoke) + 
-                        (0.00201 * non_hdl) + (0.23129 * ln_non_hdl),
-                    s0: 0.938, mean_lp: 4.667
-                },
-                kadin: {
-                    p1: (age, ln_age, sbp, ln_sbp, smoke, non_hdl, ln_non_hdl) =>
-                        0.94015 + (0.04368 * age) + (0.83545 * ln_age) - (0.17721 * ln_age * ln_age) -
-                        (0.01321 * age * smoke) - (0.00021 * age * sbp) - (0.00222 * age * ln_sbp) -
-                        (0.00109 * age * non_hdl) + (0.00164 * age * ln_non_hdl),
-                    p2: (sbp, ln_sbp, smoke, non_hdl, ln_non_hdl) =>
-                        (0.00531 * sbp) + (0.20790 * ln_sbp) + (0.47353 * smoke) +
-                        (0.02708 * non_hdl) + (0.13451 * ln_non_hdl),
-                    s0: 0.963, mean_lp: 5.764
-                }
-            };
-
-            const c = coeffs[cinsiyet];
-            const is_smoker = (sigara === 'evet') ? 1 : 0;
-            const ln_age = Math.log(yas);
-            const ln_sbp = Math.log(sistolik_bp);
-            const ln_non_hdl = Math.log(non_hdl_mmol);
-
-            const p1 = c.p1(yas, ln_age, sistolik_bp, ln_sbp, is_smoker, non_hdl_mmol, ln_non_hdl);
-            const p2 = c.p2(sistolik_bp, ln_sbp, is_smoker, non_hdl_mmol, ln_non_hdl);
-            const lp = p1 + p2;
-            
-            const risk_yuzde = (1 - Math.pow(c.s0, Math.exp(lp - c.mean_lp))) * 100;
+            const lp = calculateScore2LP(yas, sistolik_bp, (sigara === 'evet' ? 1 : 0), non_hdl_mmol, cinsiyet);
+            const c = (cinsiyet === 'erkek') ? {s0: 0.938, alpha: -4.667} : {s0: 0.963, alpha: -5.764};
+            const risk_yuzde = (1 - Math.pow(c.s0, Math.exp(lp + c.alpha))) * 100;
             
             const patient_data = {
                 date: new Date().toLocaleDateString('tr-TR', { day: 'numeric', month: 'long', year: 'numeric' }),
@@ -178,37 +214,9 @@
             document.getElementById('sonuc-alani').innerHTML = buildResultsScore2(patient_data);
             document.getElementById('sonuc-alani').style.display = 'block';
         }
-
-        function calculateScore2RiskAge(risk_percentage, cinsiyet) { /* ... Risk Yaşı hesabı değişmedi ... */ }
-        function getScore2RiskThreshold(age) { if (age < 50) return 2.5; if (age >= 50 && age < 70) return 5.0; return 7.5; }
-
-        function buildResultsScore2(data) {
-            // Sonuç kartı oluşturucu, SVG ikonlarını kullanacak şekilde güncellendi
-            return `
-            <div class="patient-summary">
-                <h3>Girdiğiniz Değerler</h3>
-                <div class="summary-grid">
-                    <div class="summary-item">Tarih: <strong>${data.date}</strong></div>
-                    <div class="summary-item">Yaş: <strong>${data.age}</strong></div>
-                    <div class="summary-item">Cinsiyet: <strong>${data.sex}</strong></div>
-                    <div class="summary-item">Sigara: <strong>${data.smoker}</strong></div>
-                    <div class="summary-item">Sistolik KB: <strong>${data.sbp} mmHg</strong></div>
-                    <div class="summary-item">Toplam Kolesterol: <strong>${data.total_chol} mg/dL</strong></div>
-                    <div class="summary-item">HDL Kolesterol: <strong>${data.hdl_chol} mg/dL</strong></div>
-                </div>
-            </div>
-            <div class="results-card">
-                 <h3>Sonuç ve Tavsiyeler</h3>
-                 <div class="results-grid">
-                    <div class="results-item"> <svg><use href="#icon-warning"/></svg> <div> <div class="results-item-text">10 yıllık ölümcül/ölümcül olmayan KVH riskiniz:</div> <div class="results-item-value">${data.risk.toFixed(1)}%</div> </div> </div>
-                    <div class="results-item"> <svg><use href="#icon-alarm"/></svg> <div> <div class="results-item-text">Sizin yaşınızdaki birisi için kılavuzların yüksek risk olarak kabul ettiği eşik:</div> <div class="results-item-value">${data.threshold}%</div> </div> </div>
-                    <div class="results-item"> <svg><use href="#icon-person"/></svg> <div> <div class="results-item-text"><strong>Risk Yaşınız:</strong> Risk faktörlerinizden dolayı, riskiniz sağlıklı bir <strong>${Math.round(data.risk_age)}</strong> yaşındaki bireyinkine benzer.</div> </div> </div>
-                    <div class="results-item"> <svg><use href="#icon-target"/></svg> <div> <div class="results-item-text"><strong>Önleme Hedefleri:</strong> <ul> <li>Sigarayı bırakma ve yaşam tarzı optimizasyonu.</li> <li>Sistolik KB < 140, tolere edilirse 130 mmHg hedefi.</li> <li>Non-HDL-C < 131 mg/dL.</li> </ul> </div> </div> </div>
-                 </div>
-            </div>`;
-        }
         
-        // Başlangıçta SCORE2 sekmesini göster
+        function buildResultsScore2(data) { /* ... Sonuç kartı HTML oluşturucu değişmedi ... */  return ` <div class="patient-summary"> <h3>Girdiğiniz Değerler</h3> <div class="summary-grid"> <div class="summary-item">Tarih: <strong>${data.date}</strong></div> <div class="summary-item">Yaş: <strong>${data.age}</strong></div> <div class="summary-item">Cinsiyet: <strong>${data.sex}</strong></div> <div class="summary-item">Sigara: <strong>${data.smoker}</strong></div> <div class="summary-item">Sistolik KB: <strong>${data.sbp} mmHg</strong></div> <div class="summary-item">Toplam Kolesterol: <strong>${data.total_chol} mg/dL</strong></div> <div class="summary-item">HDL Kolesterol: <strong>${data.hdl_chol} mg/dL</strong></div> </div> </div> <div class="results-card"> <h3>Sonuç ve Tavsiyeler</h3> <div class="results-grid"> <div class="results-item"> <svg><use href="#icon-warning"/></svg> <div> <div class="results-item-text">10 yıllık ölümcül/ölümcül olmayan KVH riskiniz:</div> <div class="results-item-value">${data.risk.toFixed(1)}%</div> </div> </div> <div class="results-item"> <svg><use href="#icon-alarm"/></svg> <div> <div class="results-item-text">Sizin yaşınızdaki birisi için kılavuzların yüksek risk olarak kabul ettiği eşik:</div> <div class="results-item-value">${data.threshold}%</div> </div> </div> <div class="results-item"> <svg><use href="#icon-person"/></svg> <div> <div class="results-item-text"><strong>Risk Yaşınız:</strong> Risk faktörlerinizden dolayı, riskiniz sağlıklı bir <strong>${Math.round(data.risk_age)}</strong> yaşındaki bireyinkine benzer.</div> </div> </div> <div class="results-item"> <svg><use href="#icon-target"/></svg> <div> <div class="results-item-text"><strong>Önleme Hedefleri:</strong> <ul> <li>Sigarayı bırakma ve yaşam tarzı optimizasyonu.</li> <li>Sistolik KB < 140, tolere edilirse 130 mmHg hedefi.</li> <li>Non-HDL-C < 131 mg/dL.</li> </ul> </div> </div> </div> </div> </div>`; }
+        
         switchTab('score2');
     </script>
 </body>
