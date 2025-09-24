@@ -3,196 +3,308 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>MESA 10 Yıllık Kalp Hastalığı Risk Hesaplayıcı</title>
+    <title>Materyal Tasarım | MESA Risk Hesaplayıcı</title>
+    <!-- Google Fonts: Roboto -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
     <style>
-        /* Genel Stil Kuralları */
+        :root {
+            --primary-color: #1976D2; /* Material Blue 700 */
+            --primary-light-color: #64B5F6; /* Material Blue 300 */
+            --accent-color: #4CAF50; /* Material Green 500 */
+            --accent-light-color: #E8F5E9; /* Material Green 50 */
+            --text-color: #212121;
+            --secondary-text-color: #757575;
+            --divider-color: #BDBDBD;
+            --background-color: #ECEFF1; /* Material Blue Grey 50 */
+        }
+
         body {
-            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
-            background-color: #f4f7f6;
+            font-family: 'Roboto', sans-serif;
+            background-color: var(--background-color);
             margin: 0;
-            padding: 20px;
+            padding: 24px;
             display: flex;
             justify-content: center;
-            align-items: center;
+            align-items: flex-start;
             min-height: 100vh;
         }
 
-        /* Ana Konteyner */
-        .container {
+        .card {
             background-color: #ffffff;
-            padding: 30px;
-            border-radius: 10px;
-            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
-            max-width: 600px;
+            padding: 24px 32px 32px 32px;
+            border-radius: 8px;
+            box-shadow: 0 3px 6px rgba(0,0,0,0.16), 0 3px 6px rgba(0,0,0,0.23);
+            max-width: 650px;
             width: 100%;
-        }
-
-        h1 {
-            color: #2c3e50;
-            text-align: center;
-            margin-bottom: 25px;
-            font-size: 1.8em;
-        }
-
-        /* Form Elemanları */
-        .form-group {
-            margin-bottom: 20px;
-        }
-
-        label {
-            display: block;
-            margin-bottom: 8px;
-            color: #34495e;
-            font-weight: 600;
-        }
-
-        input[type="number"],
-        select {
-            width: 100%;
-            padding: 12px;
-            border: 1px solid #bdc3c7;
-            border-radius: 5px;
             box-sizing: border-box;
-            font-size: 1em;
+            transition: all 0.3s cubic-bezier(.25,.8,.25,1);
         }
         
-        input[type="number"]:focus,
-        select:focus {
-            outline: none;
-            border-color: #3498db;
-            box-shadow: 0 0 5px rgba(52, 152, 219, 0.5);
+        h1 {
+            color: var(--text-color);
+            text-align: center;
+            margin-top: 0;
+            margin-bottom: 32px;
+            font-weight: 500;
+            font-size: 24px;
         }
 
-        .radio-group label {
-            display: inline-block;
-            margin-right: 15px;
-            font-weight: normal;
-        }
-        .radio-group input[type="radio"] {
-            margin-right: 5px;
+        /* Form Group & Floating Labels */
+        .form-group {
+            position: relative;
+            margin-bottom: 24px;
         }
 
-        /* Hesapla Butonu */
-        button {
+        .form-input, .form-select {
             width: 100%;
-            padding: 15px;
-            background-color: #27ae60;
+            border: none;
+            border-bottom: 1px solid var(--divider-color);
+            padding: 12px 0 8px 0;
+            font-size: 16px;
+            background-color: transparent;
+            position: relative;
+            z-index: 1;
+        }
+        
+        .form-select {
+             -webkit-appearance: none;
+             -moz-appearance: none;
+            appearance: none;
+            cursor: pointer;
+        }
+        
+        .select-icon {
+            position: absolute;
+            right: 0;
+            top: 12px;
+            pointer-events: none;
+            color: var(--secondary-text-color);
+            z-index: 0;
+        }
+
+        .form-label {
+            position: absolute;
+            top: 12px;
+            left: 0;
+            font-size: 16px;
+            color: var(--secondary-text-color);
+            pointer-events: none;
+            transition: 0.2s ease all;
+        }
+
+        .form-input:focus, .form-select:focus {
+            outline: none;
+            border-bottom-width: 2px;
+            border-bottom-color: var(--primary-color);
+        }
+
+        .form-input:focus ~ .form-label,
+        .form-input:valid ~ .form-label,
+        .form-select:focus ~ .form-label,
+        .form-select:valid ~ .form-label {
+            top: -12px;
+            font-size: 12px;
+            color: var(--primary-color);
+        }
+
+        /* Radio Buttons */
+        .radio-group-title {
+            color: var(--secondary-text-color);
+            font-size: 14px;
+            margin-bottom: 12px;
+        }
+        .radio-container {
+            display: inline-flex;
+            align-items: center;
+            margin-right: 24px;
+            cursor: pointer;
+        }
+        .radio-container input { display: none; }
+        .radio-checkmark {
+            height: 20px;
+            width: 20px;
+            border: 2px solid var(--secondary-text-color);
+            border-radius: 50%;
+            display: inline-block;
+            position: relative;
+            margin-right: 8px;
+            transition: border-color 0.3s;
+        }
+        .radio-checkmark:after {
+            content: '';
+            position: absolute;
+            display: none;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            background: var(--primary-color);
+        }
+        .radio-container input:checked ~ .radio-checkmark {
+            border-color: var(--primary-color);
+        }
+        .radio-container input:checked ~ .radio-checkmark:after {
+            display: block;
+        }
+        .radio-label { color: var(--text-color); }
+
+        /* Material Button with Ripple */
+        .material-button {
+            width: 100%;
+            padding: 12px 24px;
+            background-color: var(--primary-color);
             color: white;
             border: none;
-            border-radius: 5px;
-            font-size: 1.2em;
+            border-radius: 4px;
+            font-size: 14px;
+            font-weight: 500;
+            text-transform: uppercase;
+            letter-spacing: 1px;
             cursor: pointer;
-            transition: background-color 0.3s ease;
+            transition: box-shadow 0.3s;
+            position: relative;
+            overflow: hidden;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.12), 0 1px 2px rgba(0,0,0,0.24);
         }
 
-        button:hover {
-            background-color: #229954;
+        .material-button:hover {
+            box-shadow: 0 3px 6px rgba(0,0,0,0.16), 0 3px 6px rgba(0,0,0,0.23);
         }
 
-        /* Sonuç Alanı */
+        .ripple {
+            position: absolute;
+            border-radius: 50%;
+            transform: scale(0);
+            animation: ripple-animation 0.6s linear;
+            background-color: rgba(255, 255, 255, 0.7);
+        }
+
+        @keyframes ripple-animation {
+            to {
+                transform: scale(4);
+                opacity: 0;
+            }
+        }
+
+        /* Result Card */
         #sonuc-alani {
-            margin-top: 25px;
+            margin-top: 32px;
             padding: 20px;
-            background-color: #e8f6ef;
-            border: 1px solid #27ae60;
-            border-radius: 5px;
+            background-color: var(--accent-light-color);
+            border-left: 5px solid var(--accent-color);
+            border-radius: 4px;
             text-align: center;
-            display: none; /* Başlangıçta gizli */
+            display: none;
         }
-
         #sonuc-alani h2 {
             margin-top: 0;
-            color: #27ae60;
+            color: var(--accent-color);
+            font-weight: 500;
         }
-        
         #sonuc-alani p {
-            font-size: 1.1em;
-            color: #2c3e50;
+            font-size: 16px;
+            color: var(--text-color);
             line-height: 1.6;
         }
 
-        /* Uyarı Metni */
         .disclaimer {
             text-align: center;
-            margin-top: 20px;
-            font-size: 0.9em;
-            color: #7f8c8d;
+            margin-top: 24px;
+            font-size: 12px;
+            color: var(--secondary-text-color);
         }
     </style>
 </head>
 <body>
 
-    <div class="container">
+    <div class="card">
         <h1>MESA 10 Yıllık KKH Risk Hesaplayıcı</h1>
         <form id="risk-form">
+            <!-- Grid for two-column layout can be added here if needed -->
             <div class="form-group">
-                <label for="yas">Yaş (45-84 arası)</label>
-                <input type="number" id="yas" required>
+                <input type="number" id="yas" class="form-input" required>
+                <label for="yas" class="form-label">Yaş (45-84 arası)</label>
             </div>
 
             <div class="form-group">
-                <label for="cinsiyet">Cinsiyet</label>
-                <select id="cinsiyet" required>
+                <select id="cinsiyet" class="form-select" required>
+                    <option value="" disabled selected></option>
                     <option value="erkek">Erkek</option>
                     <option value="kadin">Kadın</option>
                 </select>
+                <label for="cinsiyet" class="form-label">Cinsiyet</label>
+                <span class="select-icon">&#9662;</span>
             </div>
 
             <div class="form-group">
-                <label for="irk">Irk/Etnik Köken</label>
-                <select id="irk" required>
+                <select id="irk" class="form-select" required>
+                    <option value="" disabled selected></option>
                     <option value="beyaz">Beyaz (Non-Hispanik)</option>
                     <option value="cinli">Çinli</option>
                     <option value="siyahi">Siyahi</option>
                     <option value="hispanik">Hispanik</option>
                 </select>
-            </div>
-
-            <div class="form-group">
-                <label for="toplam_kolesterol">Toplam Kolesterol (mg/dL)</label>
-                <input type="number" id="toplam_kolesterol" required>
-            </div>
-
-            <div class="form-group">
-                <label for="hdl_kolesterol">HDL Kolesterol (mg/dL)</label>
-                <input type="number" id="hdl_kolesterol" required>
-            </div>
-
-            <div class="form-group">
-                <label for="sistolik_tansiyon">Sistolik Kan Basıncı (Büyük Tansiyon, mmHg)</label>
-                <input type="number" id="sistolik_tansiyon" required>
-            </div>
-
-            <div class="form-group radio-group">
-                <label>Tansiyon ilacı kullanıyor musunuz?</label><br>
-                <label><input type="radio" name="tansiyon_tedavisi" value="evet" required> Evet</label>
-                <label><input type="radio" name="tansiyon_tedavisi" value="hayir"> Hayır</label>
-            </div>
-
-            <div class="form-group radio-group">
-                <label>Diyabetiniz var mı?</label><br>
-                <label><input type="radio" name="diyabet" value="evet" required> Evet</label>
-                <label><input type="radio" name="diyabet" value="hayir"> Hayır</label>
-            </div>
-
-            <div class="form-group radio-group">
-                <label>Sigara kullanıyor musunuz?</label><br>
-                <label><input type="radio" name="sigara" value="evet" required> Evet</label>
-                <label><input type="radio" name="sigara" value="hayir"> Hayır</label>
-            </div>
-
-            <div class="form-group radio-group">
-                <label>Ailenizde (anne, baba, kardeş) kalp krizi öyküsü var mı?</label><br>
-                <label><input type="radio" name="aile_oykusu" value="evet" required> Evet</label>
-                <label><input type="radio" name="aile_oykusu" value="hayir"> Hayır</label>
+                <label for="irk" class="form-label">Irk/Etnik Köken</label>
+                <span class="select-icon">&#9662;</span>
             </div>
             
             <div class="form-group">
-                <label for="kalsiyum_skoru">Koroner Arter Kalsiyum (CAC) Skoru (Biliyorsanız giriniz)</label>
-                <input type="number" id="kalsiyum_skoru">
+                <input type="number" id="toplam_kolesterol" class="form-input" required>
+                <label for="toplam_kolesterol" class="form-label">Toplam Kolesterol (mg/dL)</label>
             </div>
 
-            <button type="button" onclick="hesapla()">Riski Hesapla</button>
+            <div class="form-group">
+                <input type="number" id="hdl_kolesterol" class="form-input" required>
+                <label for="hdl_kolesterol" class="form-label">HDL Kolesterol (mg/dL)</label>
+            </div>
+
+            <div class="form-group">
+                <input type="number" id="sistolik_tansiyon" class="form-input" required>
+                <label for="sistolik_tansiyon" class="form-label">Sistolik Kan Basıncı (mmHg)</label>
+            </div>
+
+            <div class="form-group">
+                 <p class="radio-group-title">Tansiyon ilacı kullanıyor musunuz?</p>
+                 <label class="radio-container">
+                    <input type="radio" name="tansiyon_tedavisi" value="evet" required>
+                    <span class="radio-checkmark"></span>
+                    <span class="radio-label">Evet</span>
+                 </label>
+                 <label class="radio-container">
+                    <input type="radio" name="tansiyon_tedavisi" value="hayir">
+                    <span class="radio-checkmark"></span>
+                    <span class="radio-label">Hayır</span>
+                 </label>
+            </div>
+            
+            <div class="form-group">
+                 <p class="radio-group-title">Diyabetiniz var mı?</p>
+                 <label class="radio-container"><input type="radio" name="diyabet" value="evet" required><span class="radio-checkmark"></span><span class="radio-label">Evet</span></label>
+                 <label class="radio-container"><input type="radio" name="diyabet" value="hayir"><span class="radio-checkmark"></span><span class="radio-label">Hayır</span></label>
+            </div>
+            
+            <div class="form-group">
+                 <p class="radio-group-title">Sigara kullanıyor musunuz?</p>
+                 <label class="radio-container"><input type="radio" name="sigara" value="evet" required><span class="radio-checkmark"></span><span class="radio-label">Evet</span></label>
+                 <label class="radio-container"><input type="radio" name="sigara" value="hayir"><span class="radio-checkmark"></span><span class="radio-label">Hayır</span></label>
+            </div>
+
+            <div class="form-group">
+                 <p class="radio-group-title">Ailenizde kalp krizi öyküsü var mı?</p>
+                 <label class="radio-container"><input type="radio" name="aile_oykusu" value="evet" required><span class="radio-checkmark"></span><span class="radio-label">Evet</span></label>
+                 <label class="radio-container"><input type="radio" name="aile_oykusu" value="hayir"><span class="radio-checkmark"></span><span class="radio-label">Hayır</span></label>
+            </div>
+            
+            <div class="form-group">
+                <input type="number" id="kalsiyum_skoru" class="form-input">
+                <label for="kalsiyum_skoru" class="form-label">Koroner Arter Kalsiyum (CAC) Skoru (İsteğe bağlı)</label>
+            </div>
+            
+            <button type="button" class="material-button" onclick="hesapla()">Riski Hesapla</button>
         </form>
 
         <div id="sonuc-alani">
@@ -201,11 +313,32 @@
         </div>
 
         <p class="disclaimer">
-            Bu araç yalnızca bilgilendirme amaçlıdır ve tıbbi bir teşhis veya tavsiye yerine geçmez. Lütfen sonuçları ve kalp sağlığınızı değerlendirmek için mutlaka bir hekime danışınız.
+            Bu araç yalnızca bilgilendirme amaçlıdır. Tıbbi bir teşhis veya tavsiye yerine geçmez. Lütfen sonuçları bir hekime danışarak değerlendiriniz.
         </p>
     </div>
 
     <script>
+        // --- RIPPLE EFFECT FOR BUTTON ---
+        const button = document.querySelector('.material-button');
+        button.addEventListener('click', function (e) {
+            const rect = e.target.getBoundingClientRect();
+            const x = e.clientX - rect.left;
+            const y = e.clientY - rect.top;
+
+            const ripple = document.createElement('span');
+            ripple.classList.add('ripple');
+            ripple.style.left = x + 'px';
+            ripple.style.top = y + 'px';
+            
+            this.appendChild(ripple);
+
+            setTimeout(() => {
+                ripple.remove();
+            }, 600);
+        });
+
+
+        // --- CALCULATION LOGIC ---
         function hesapla() {
             // 1. FORM VERİLERİNİ TOPLAMA
             const yas = parseInt(document.getElementById('yas').value);
@@ -227,24 +360,10 @@
                 return;
             }
 
-            // 2. MESA SKORU HESAPLAMA MANTIĞI
-            
-            // Beta Katsayıları (Tablo 2'den)
-            const katsayilar = {
-                'yas': 0.0455, 'cinsiyet_erkek': 0.7496, 'irk_cinli': -0.5055, 'irk_siyahi': -0.2111,
-                'irk_hispanik': -0.1900, 'toplam_kolesterol': 0.0053, 'hdl_kolesterol': -0.0140,
-                'sistolik_tansiyon': 0.0085, 'tansiyon_tedavisi_evet': 0.3381, 'diyabet_evet': 0.5168,
-                'sigara_evet': 0.4732, 'aile_oykusu_evet': 0.4522
-            };
+            // 2. MESA SKORU HESAPLAMA MANTIĞI (unchanged from previous version)
+            const katsayilar = { 'yas': 0.0455, 'cinsiyet_erkek': 0.7496, 'irk_cinli': -0.5055, 'irk_siyahi': -0.2111, 'irk_hispanik': -0.1900, 'toplam_kolesterol': 0.0053, 'hdl_kolesterol': -0.0140, 'sistolik_tansiyon': 0.0085, 'tansiyon_tedavisi_evet': 0.3381, 'diyabet_evet': 0.5168, 'sigara_evet': 0.4732, 'aile_oykusu_evet': 0.4522 };
+            const katsayilar_cac = { 'yas': 0.0172, 'cinsiyet_erkek': 0.4079, 'irk_cinli': -0.3475, 'irk_siyahi': 0.0353, 'irk_hispanik': -0.0222, 'toplam_kolesterol': 0.0043, 'hdl_kolesterol': -0.0114, 'sistolik_tansiyon': 0.0066, 'tansiyon_tedavisi_evet': 0.2278, 'diyabet_evet': 0.3892, 'sigara_evet': 0.3717, 'aile_oykusu_evet': 0.3239, 'ln_cac_plus_1': 0.2743 };
 
-            const katsayilar_cac = {
-                'yas': 0.0172, 'cinsiyet_erkek': 0.4079, 'irk_cinli': -0.3475, 'irk_siyahi': 0.0353,
-                'irk_hispanik': -0.0222, 'toplam_kolesterol': 0.0043, 'hdl_kolesterol': -0.0114,
-                'sistolik_tansiyon': 0.0066, 'tansiyon_tedavisi_evet': 0.2278, 'diyabet_evet': 0.3892,
-                'sigara_evet': 0.3717, 'aile_oykusu_evet': 0.3239, 'ln_cac_plus_1': 0.2743
-            };
-
-            // Beta Toplamını Hesaplama Fonksiyonu
             function getBetaToplami(veri, katsayi_listesi) {
                 let beta_toplami = 0;
                 beta_toplami += veri.yas * katsayi_listesi.yas;
@@ -265,35 +384,19 @@
                 return beta_toplami;
             }
             
-            // Hasta verilerini bir objede toplama
-            const hasta_verisi = {
-                yas, cinsiyet, irk, toplam_kolesterol, hdl_kolesterol, sistolik_tansiyon,
-                tansiyon_tedavisi, diyabet, sigara, aile_oykusu, kalsiyum_skoru
-            };
+            const hasta_verisi = { yas, cinsiyet, irk, toplam_kolesterol, hdl_kolesterol, sistolik_tansiyon, tansiyon_tedavisi, diyabet, sigara, aile_oykusu, kalsiyum_skoru };
             
-            // a) CAC olmadan risk hesaplama
             const beta_toplami_temel = getBetaToplami(hasta_verisi, katsayilar);
-            const baseline_survival_temel = 0.99963;
-            const risk_temel = (1 - Math.pow(baseline_survival_temel, Math.exp(beta_toplami_temel))) * 100;
+            const risk_temel = (1 - Math.pow(0.99963, Math.exp(beta_toplami_temel))) * 100;
 
-            let sonucHTML = `
-                <strong>Koroner Arter Kalsiyum Skoru OLMADAN</strong> 10 yıllık KKH riskiniz: 
-                <strong>%${risk_temel.toFixed(1)}</strong>
-                <br><br>
-            `;
+            let sonucHTML = `<strong>Geleneksel faktörlere göre</strong> 10 yıllık KKH riskiniz: <br><strong>%${risk_temel.toFixed(1)}</strong><hr style="border: 0; border-top: 1px solid #BDBDBD; margin: 12px 0;">`;
             
-            // b) CAC ile risk hesaplama (eğer skor girildiyse)
             if (kalsiyum_skoru !== null) {
                 const beta_toplami_cac_li = getBetaToplami(hasta_verisi, katsayilar_cac);
-                const baseline_survival_cac_li = 0.99833;
-                const risk_cac_li = (1 - Math.pow(baseline_survival_cac_li, Math.exp(beta_toplami_cac_li))) * 100;
-                
-                sonucHTML += `
-                    <strong>Koroner Arter Kalsiyum Skoru (${kalsiyum_skoru}) DAHİL EDİLDİĞİNDE</strong> 10 yıllık KKH riskiniz: 
-                    <strong>%${risk_cac_li.toFixed(1)}</strong>
-                `;
+                const risk_cac_li = (1 - Math.pow(0.99833, Math.exp(beta_toplami_cac_li))) * 100;
+                sonucHTML += `<strong>Kalsiyum Skoru (${kalsiyum_skoru}) dahil edildiğinde</strong> 10 yıllık KKH riskiniz: <br><strong>%${risk_cac_li.toFixed(1)}</strong>`;
             } else {
-                 sonucHTML += `Kalsiyum skoru girmediğiniz için bu değere dayalı daha hassas risk hesaplaması yapılamamıştır.`;
+                 sonucHTML += `Daha hassas bir ölçüm için Koroner Arter Kalsiyum skorunuzu girebilirsiniz.`;
             }
 
             // 3. SONUCU EKRANDA GÖSTERME
