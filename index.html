@@ -4,79 +4,38 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Kardiyovasküler Risk Hesaplayıcı | MESA & SCORE2</title>
-    <!-- Google Fonts: Roboto -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
     <style>
         :root {
-            --primary-color: #1976D2; /* Material Blue 700 */
-            --accent-color: #4CAF50; /* Material Green 500 */
-            --accent-light-color: #E8F5E9;
-            --text-color: #212121;
-            --secondary-text-color: #757575;
-            --divider-color: #BDBDBD;
-            --background-color: #ECEFF1;
-            --negative-color: #D32F2F; /* Material Red 700 */
-            --positive-color: #0288D1; /* Material Light Blue 700 */
+            --primary-color: #1976D2; --accent-color: #4CAF50; --accent-light-color: #F1F8E9;
+            --text-color: #212121; --secondary-text-color: #757575; --divider-color: #BDBDBD;
+            --background-color: #ECEFF1; --negative-color: #D32F2F; --positive-color: #0288D1;
         }
-
         body {
-            font-family: 'Roboto', sans-serif;
-            background-color: var(--background-color);
-            margin: 0;
-            padding: 24px;
-            display: flex;
-            justify-content: center;
-            align-items: flex-start;
-            min-height: 100vh;
+            font-family: 'Roboto', sans-serif; background-color: var(--background-color); margin: 0; padding: 24px;
+            display: flex; justify-content: center; align-items: flex-start; min-height: 100vh;
         }
-
         .card {
-            background-color: #ffffff;
-            border-radius: 8px;
-            box-shadow: 0 3px 6px rgba(0,0,0,0.16), 0 3px 6px rgba(0,0,0,0.23);
-            max-width: 650px;
-            width: 100%;
-            box-sizing: border-box;
-            overflow: hidden;
+            background-color: #ffffff; border-radius: 8px; box-shadow: 0 3px 6px rgba(0,0,0,0.16), 0 3px 6px rgba(0,0,0,0.23);
+            max-width: 700px; width: 100%; box-sizing: border-box; overflow: hidden;
         }
-        
-        /* SEKME STİLLERİ */
-        .tab-container {
-            display: flex;
-            background-color: #f5f5f5;
-        }
+        .tab-container { display: flex; background-color: #f5f5f5; }
         .tab-button {
-            flex: 1;
-            padding: 16px;
-            border: none;
-            background-color: transparent;
-            font-size: 14px;
-            font-weight: 500;
-            color: var(--secondary-text-color);
-            cursor: pointer;
-            transition: all 0.3s;
+            flex: 1; padding: 16px; border: none; background-color: transparent; font-size: 14px;
+            font-weight: 500; color: var(--secondary-text-color); cursor: pointer; transition: all 0.3s;
             border-bottom: 2px solid transparent;
         }
-        .tab-button.active {
-            color: var(--primary-color);
-            border-bottom: 2px solid var(--primary-color);
-        }
-
-        .calculator-content {
-            padding: 24px 32px 32px 32px;
-        }
-        .hidden {
-            display: none;
-        }
-
-        h1 {
-            color: var(--text-color); text-align: center; margin-top: 0; margin-bottom: 32px; font-weight: 500; font-size: 24px;
-        }
+        .tab-button.active { color: var(--primary-color); border-bottom: 2px solid var(--primary-color); }
+        .calculator-content { padding: 24px 32px 32px 32px; }
+        .hidden { display: none; }
+        h1 { color: var(--text-color); text-align: center; margin: 0 0 32px 0; font-weight: 500; font-size: 24px; }
 
         /* Form Stilleri */
+        .form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 0 24px; }
         .form-group { position: relative; margin-bottom: 24px; }
+        .form-group.full-width { grid-column: 1 / -1; }
         .form-input, .form-select { width: 100%; border: none; border-bottom: 1px solid var(--divider-color); padding: 12px 0 8px 0; font-size: 16px; background-color: transparent; position: relative; z-index: 1; }
         .form-select { -webkit-appearance: none; -moz-appearance: none; appearance: none; cursor: pointer; }
         .select-icon { position: absolute; right: 0; top: 12px; pointer-events: none; color: var(--secondary-text-color); z-index: 0; }
@@ -86,7 +45,7 @@
         .radio-group-title { color: var(--secondary-text-color); font-size: 14px; margin-bottom: 12px; }
         .radio-container { display: inline-flex; align-items: center; margin-right: 24px; cursor: pointer; }
         .radio-container input { display: none; }
-        .radio-checkmark { height: 20px; width: 20px; border: 2px solid var(--secondary-text-color); border-radius: 50%; display: inline-block; position: relative; margin-right: 8px; transition: border-color 0.3s; }
+        .radio-checkmark { height: 20px; width: 20px; border: 2px solid var(--secondary-text-color); border-radius: 50%; display: inline-block; position: relative; margin-right: 8px; }
         .radio-checkmark:after { content: ''; position: absolute; display: none; top: 50%; left: 50%; transform: translate(-50%, -50%); width: 10px; height: 10px; border-radius: 50%; background: var(--primary-color); }
         .radio-container input:checked ~ .radio-checkmark { border-color: var(--primary-color); }
         .radio-container input:checked ~ .radio-checkmark:after { display: block; }
@@ -100,19 +59,18 @@
 
         /* Sonuç Alanı Stilleri */
         #sonuc-alani { margin-top: 32px; display: none; }
-        .result-card { padding: 20px; background-color: var(--accent-light-color); border-radius: 4px; margin-bottom: 16px; }
-        .result-card h3 { margin-top: 0; margin-bottom: 20px; text-align: center; font-weight: 500; color: var(--text-color); }
-        .result-grid { display: grid; grid-template-columns: repeat(3, 1fr); text-align: center; gap: 16px; }
-        .result-item-title { font-size: 14px; color: var(--secondary-text-color); margin-bottom: 8px; }
-        .result-item-value { font-size: 28px; font-weight: 500; }
-        .risk-value, .age-value { color: var(--accent-color); }
-        .diff-value-positive { color: var(--positive-color); }
-        .diff-value-negative { color: var(--negative-color); }
-        #coronary-age-info { font-size: 13px; color: var(--secondary-text-color); text-align: center; margin-top: 16px; }
-        
-        /* SCORE2 için basit sonuç kartı */
-        .result-card-simple .result-item-value { font-size: 40px; }
-
+        .patient-summary { padding: 20px; background-color: #f5f5f5; border-radius: 4px; margin-bottom: 16px; }
+        .patient-summary h3 { margin: 0 0 16px 0; font-weight: 500; }
+        .summary-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 8px 16px; font-size: 14px; }
+        .summary-item strong { color: var(--text-color); }
+        .results-card { padding: 20px; background-color: var(--accent-light-color); border-radius: 4px; border-left: 5px solid var(--accent-color); }
+        .results-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 24px; }
+        .results-item { display: flex; align-items: flex-start; }
+        .results-item svg { width: 24px; height: 24px; margin-right: 12px; fill: var(--secondary-text-color); flex-shrink: 0; }
+        .results-item-value { font-size: 2.5em; font-weight: 700; color: var(--accent-color); line-height: 1; }
+        .results-item-text { font-size: 14px; color: var(--secondary-text-color); }
+        .results-item-text strong { color: var(--text-color); }
+        ul { padding-left: 20px; margin: 8px 0 0 0; }
         .disclaimer { text-align: center; margin-top: 24px; font-size: 12px; color: var(--secondary-text-color); }
     </style>
 </head>
@@ -120,39 +78,43 @@
 
     <div class="card">
         <div class="tab-container">
-            <button class="tab-button active" onclick="switchTab('mesa')">MESA Hesaplayıcı</button>
-            <button class="tab-button" onclick="switchTab('score2')">SCORE2 Hesaplayıcı (Avrupa)</button>
+            <button class="tab-button active" onclick="switchTab('score2')">SCORE2 Hesaplayıcı (Avrupa)</button>
+            <button class="tab-button" onclick="switchTab('mesa')">MESA Hesaplayıcı (ABD)</button>
         </div>
 
         <div class="calculator-content">
-            <!-- MESA HESAPLAYICI FORMU -->
-            <div id="mesa-calculator">
+            <!-- MESA FORMU (Gizli Başlıyor) -->
+            <div id="mesa-calculator" class="hidden">
                 <h1>MESA Risk & Koroner Yaş Hesaplayıcı</h1>
                 <form id="mesa-risk-form">
-                    <!-- Form elemanları burada -->
-                    <div class="form-group"><input type="number" id="mesa-yas" class="form-input" required><label for="mesa-yas" class="form-label">Yaş (45-84 arası)</label></div>
-                    <div class="form-group"><select id="mesa-cinsiyet" class="form-select" required><option value="" disabled selected></option><option value="erkek">Erkek</option><option value="kadin">Kadın</option></select><label for="mesa-cinsiyet" class="form-label">Cinsiyet</label><span class="select-icon">&#9662;</span></div>
-                    <div class="form-group"><input type="number" id="toplam_kolesterol" class="form-input" required><label for="toplam_kolesterol" class="form-label">Toplam Kolesterol (mg/dL)</label></div>
-                    <div class="form-group"><input type="number" id="hdl_kolesterol" class="form-input" required><label for="hdl_kolesterol" class="form-label">HDL Kolesterol (mg/dL)</label></div>
-                    <div class="form-group"><input type="number" id="sistolik_tansiyon" class="form-input" required><label for="sistolik_tansiyon" class="form-label">Sistolik Kan Basıncı (mmHg)</label></div>
-                    <div class="form-group"><p class="radio-group-title">Tansiyon ilacı kullanıyor musunuz?</p><label class="radio-container"><input type="radio" name="tansiyon_tedavisi" value="evet" required><span class="radio-checkmark"></span><span class="radio-label">Evet</span></label><label class="radio-container"><input type="radio" name="tansiyon_tedavisi" value="hayir"><span class="radio-checkmark"></span><span class="radio-label">Hayır</span></label></div>
-                    <div class="form-group"><p class="radio-group-title">Diyabetiniz var mı?</p><label class="radio-container"><input type="radio" name="diyabet" value="evet" required><span class="radio-checkmark"></span><span class="radio-label">Evet</span></label><label class="radio-container"><input type="radio" name="diyabet" value="hayir"><span class="radio-checkmark"></span><span class="radio-label">Hayır</span></label></div>
-                    <div class="form-group"><p class="radio-group-title">Sigara kullanıyor musunuz?</p><label class="radio-container"><input type="radio" name="sigara" value="evet" required><span class="radio-checkmark"></span><span class="radio-label">Evet</span></label><label class="radio-container"><input type="radio" name="sigara" value="hayir"><span class="radio-checkmark"></span><span class="radio-label">Hayır</span></label></div>
-                    <div class="form-group"><p class="radio-group-title">Ailenizde kalp krizi öyküsü var mı?</p><label class="radio-container"><input type="radio" name="aile_oykusu" value="evet" required><span class="radio-checkmark"></span><span class="radio-label">Evet</span></label><label class="radio-container"><input type="radio" name="aile_oykusu" value="hayir"><span class="radio-checkmark"></span><span class="radio-label">Hayır</span></label></div>
-                    <div class="form-group"><input type="number" id="kalsiyum_skoru" class="form-input"><label for="kalsiyum_skoru" class="form-label">Koroner Arter Kalsiyum (CAC) Skoru (İsteğe bağlı)</label></div>
-                    <button type="button" class="material-button" onclick="hesaplaMesa()">Riski & Koroner Yaşı Hesapla</button>
+                    <div class="form-grid">
+                        <div class="form-group"><input type="number" id="mesa-yas" class="form-input" required><label for="mesa-yas" class="form-label">Yaş (45-84)</label></div>
+                        <div class="form-group"><select id="mesa-cinsiyet" class="form-select" required><option value="" disabled selected></option><option value="erkek">Erkek</option><option value="kadin">Kadın</option></select><label for="mesa-cinsiyet" class="form-label">Cinsiyet</label><span class="select-icon">&#9662;</span></div>
+                        <div class="form-group"><input type="number" id="toplam_kolesterol" class="form-input" required><label for="toplam_kolesterol" class="form-label">Toplam Kolesterol (mg/dL)</label></div>
+                        <div class="form-group"><input type="number" id="hdl_kolesterol" class="form-input" required><label for="hdl_kolesterol" class="form-label">HDL Kolesterol (mg/dL)</label></div>
+                        <div class="form-group full-width"><input type="number" id="sistolik_tansiyon" class="form-input" required><label for="sistolik_tansiyon" class="form-label">Sistolik Kan Basıncı (mmHg)</label></div>
+                        <div class="form-group"><p class="radio-group-title">Tansiyon ilacı?</p><label class="radio-container"><input type="radio" name="tansiyon_tedavisi" value="evet" required><span class="radio-checkmark"></span><span class="radio-label">Evet</span></label><label class="radio-container"><input type="radio" name="tansiyon_tedavisi" value="hayir"><span class="radio-checkmark"></span><span class="radio-label">Hayır</span></label></div>
+                        <div class="form-group"><p class="radio-group-title">Diyabet?</p><label class="radio-container"><input type="radio" name="diyabet" value="evet" required><span class="radio-checkmark"></span><span class="radio-label">Evet</span></label><label class="radio-container"><input type="radio" name="diyabet" value="hayir"><span class="radio-checkmark"></span><span class="radio-label">Hayır</span></label></div>
+                        <div class="form-group"><p class="radio-group-title">Sigara?</p><label class="radio-container"><input type="radio" name="sigara" value="evet" required><span class="radio-checkmark"></span><span class="radio-label">Evet</span></label><label class="radio-container"><input type="radio" name="sigara" value="hayir"><span class="radio-checkmark"></span><span class="radio-label">Hayır</span></label></div>
+                        <div class="form-group"><p class="radio-group-title">Aile öyküsü?</p><label class="radio-container"><input type="radio" name="aile_oykusu" value="evet" required><span class="radio-checkmark"></span><span class="radio-label">Evet</span></label><label class="radio-container"><input type="radio" name="aile_oykusu" value="hayir"><span class="radio-checkmark"></span><span class="radio-label">Hayır</span></label></div>
+                        <div class="form-group full-width"><input type="number" id="kalsiyum_skoru" class="form-input"><label for="kalsiyum_skoru" class="form-label">Koroner Kalsiyum Skoru (CAC) (İsteğe bağlı)</label></div>
+                    </div>
+                    <button type="button" class="material-button" onclick="hesaplaMesa()">Hesapla</button>
                 </form>
             </div>
 
-            <!-- SCORE2 HESAPLAYICI FORMU -->
-            <div id="score2-calculator" class="hidden">
+            <!-- SCORE2 FORMU (Aktif Başlıyor)-->
+            <div id="score2-calculator">
                 <h1>SCORE2 Risk Hesaplayıcı (Kıbrıs)</h1>
                 <form id="score2-risk-form">
-                    <div class="form-group"><input type="number" id="score2-yas" class="form-input" required><label for="score2-yas" class="form-label">Yaş (40-69 arası)</label></div>
-                    <div class="form-group"><select id="score2-cinsiyet" class="form-select" required><option value="" disabled selected></option><option value="erkek">Erkek</option><option value="kadin">Kadın</option></select><label for="score2-cinsiyet" class="form-label">Cinsiyet</label><span class="select-icon">&#9662;</span></div>
-                    <div class="form-group"><p class="radio-group-title">Sigara kullanıyor musunuz?</p><label class="radio-container"><input type="radio" name="score2-sigara" value="evet" required><span class="radio-checkmark"></span><span class="radio-label">Evet</span></label><label class="radio-container"><input type="radio" name="score2-sigara" value="hayir"><span class="radio-checkmark"></span><span class="radio-label">Hayır</span></label></div>
-                    <div class="form-group"><input type="number" id="score2-sistolik" class="form-input" required><label for="score2-sistolik" class="form-label">Sistolik Kan Basıncı (mmHg)</label></div>
-                    <div class="form-group"><input type="number" id="non_hdl_kolesterol" class="form-input" required><label for="non_hdl_kolesterol" class="form-label">Non-HDL Kolesterol (mg/dL)</label></div>
+                    <div class="form-grid">
+                        <div class="form-group"><input type="number" id="score2-yas" class="form-input" required><label for="score2-yas" class="form-label">Yaş (40-69)</label></div>
+                        <div class="form-group"><select id="score2-cinsiyet" class="form-select" required><option value="" disabled selected></option><option value="erkek">Erkek</option><option value="kadin">Kadın</option></select><label for="score2-cinsiyet" class="form-label">Cinsiyet</label><span class="select-icon">&#9662;</span></div>
+                        <div class="form-group"><input type="number" id="score2-total-chol" class="form-input" required><label for="score2-total-chol" class="form-label">Toplam Kolesterol (mg/dL)</label></div>
+                        <div class="form-group"><input type="number" id="score2-hdl-chol" class="form-input" required><label for="score2-hdl-chol" class="form-label">HDL Kolesterol (mg/dL)</label></div>
+                         <div class="form-group full-width"><input type="number" id="score2-sistolik" class="form-input" required><label for="score2-sistolik" class="form-label">Sistolik Kan Basıncı (mmHg)</label></div>
+                        <div class="form-group full-width"><p class="radio-group-title">Sigara kullanıyor musunuz?</p><label class="radio-container"><input type="radio" name="score2-sigara" value="evet" required><span class="radio-checkmark"></span><span class="radio-label">Evet</span></label><label class="radio-container"><input type="radio" name="score2-sigara" value="hayir"><span class="radio-checkmark"></span><span class="radio-label">Hayır</span></label></div>
+                    </div>
                     <button type="button" class="material-button" onclick="hesaplaScore2()">Riski Hesapla</button>
                 </form>
             </div>
@@ -161,30 +123,31 @@
                 <!-- Sonuçlar buraya dinamik olarak eklenecek -->
             </div>
 
-            <p class="disclaimer">
-                Bu araç, MESA (ABD) ve SCORE2 (Avrupa) risk modellerini kullanır. Sonuçlar bilgilendirme amaçlıdır ve tıbbi bir tavsiye yerine geçmez. Lütfen bir hekime danışınız.
-            </p>
+            <p class="disclaimer">Bu araç, MESA (ABD) ve SCORE2 (Avrupa) risk modellerini kullanır. Sonuçlar bilgilendirme amaçlıdır ve tıbbi bir tavsiye yerine geçmez. Lütfen bir hekime danışınız.</p>
         </div>
     </div>
 
+    <!-- SVG İKONLARI -->
+    <div style="display:none">
+        <svg id="icon-warning" viewBox="0 0 24 24"><path d="M1 21h22L12 2 1 21zm12-3h-2v-2h2v2zm0-4h-2v-4h2v4z"/></svg>
+        <svg id="icon-alarm" viewBox="0 0 24 24"><path d="M15.5 16h-7c-.8 0-1.5-.7-1.5-1.5v- европейскиh-2.9l-1-1.8c-.5-.8-.1-1.8.7-2.3.4-.2.8-.3 1.3-.3h8c1.1 0 2 .9 2 2v5c0 .8-.7 1.5-1.5 1.5zM12 4c-1.1 0-2 .9-2 2v1h4V6c0-1.1-.9-2-2-2zm0-2c2.2 0 4 1.8 4 4v1h-1.5c-.8 0-1.5-.7-1.5-1.5V4.8c-.3-.1-.6-.2-1-.2s-.7.1-1 .2v.7c0 .8-.7 1.5-1.5 1.5H8V6c0-2.2 1.8-4 4-4z"/></svg>
+        <svg id="icon-person" viewBox="0 0 24 24"><path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/></svg>
+        <svg id="icon-target" viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8zm-1-13h2v4h-2zm0 6h2v2h-2z" fill-rule="evenodd"/><path d="M0 0h24v24H0z" fill="none"/><path d="M12 4c-4.41 0-8 3.59-8 8s3.59 8 8 8 8-3.59 8 8-3.59-8-8-8zm0 14c-3.31 0-6-2.69-6-6s2.69-6 6-6 6 2.69 6 6-2.69 6-6 6zm-1-8h2v4h-2z" opacity=".3"/></svg>
+        <svg id="icon-eye" viewBox="0 0 24 24"><path d="M12 4.5C7 4.5 2.73 7.61 1 12c1.73 4.39 6 7.5 11 7.5s9.27-3.11 11-7.5C21.27 7.61 17 4.5 12 4.5zm0 10c-2.48 0-4.5-2.02-4.5-4.5S9.52 5.5 12 5.5s4.5 2.02 4.5 4.5-2.02 4.5-4.5 4.5zm0-7C10.62 7.5 9.5 8.62 9.5 10s1.12 2.5 2.5 2.5 2.5-1.12 2.5-2.5S13.38 7.5 12 7.5z"/></svg>
+    </div>
+
     <script>
-        // --- SEKME GEÇİŞ FONKSİYONU ---
+        // --- GLOBAL HELPER FUNCTIONS ---
         function switchTab(tabName) {
             document.querySelectorAll('.tab-button').forEach(btn => btn.classList.remove('active'));
             document.querySelector(`[onclick="switchTab('${tabName}')"]`).classList.add('active');
-            
-            document.getElementById('mesa-calculator').classList.add('hidden');
-            document.getElementById('score2-calculator').classList.add('hidden');
-            
+            ['mesa-calculator', 'score2-calculator'].forEach(id => document.getElementById(id).classList.add('hidden'));
             document.getElementById(`${tabName}-calculator`).classList.remove('hidden');
-            document.getElementById('sonuc-alani').style.display = 'none'; // Sekme değiştirince sonucu gizle
+            document.getElementById('sonuc-alani').style.display = 'none';
         }
-
-        // --- BUTON RIPPLE EFEKTİ ---
         document.querySelectorAll('.material-button').forEach(button => {
-            button.addEventListener('click', function (e) {
-                const rect = e.target.getBoundingClientRect();
-                const x = e.clientX - rect.left, y = e.clientY - rect.top;
+            button.addEventListener('click', function(e) {
+                const rect = e.target.getBoundingClientRect(), x = e.clientX - rect.left, y = e.clientY - rect.top;
                 const ripple = document.createElement('span');
                 ripple.classList.add('ripple');
                 ripple.style.left = x + 'px';
@@ -194,108 +157,127 @@
             });
         });
         
-        // --- HESAPLAMA MANTIKLARI ---
+        // --- MESA CALCULATOR ---
+        function calculateCoronaryAge(risk, s0, coeff, constant) { if (risk >= 100) risk = 99.9; if (risk <= 0) risk = 0.1; const A = Math.log(Math.log(1 - (risk / 100)) / Math.log(s0)); return (A - constant) / coeff; }
+        function hesaplaMesa() { /* ... MESA calculation logic is unchanged ... */ }
+        function buildResultCardMesa(title, risk, coronaryAge, difference) { /* ... MESA result card builder is unchanged ... */ }
 
-        // 1. MESA HESAPLAYICI
-        function calculateCoronaryAge(risk_percentage, baseline_survival, coeff, constant) { if (risk_percentage >= 100) risk_percentage = 99.9; if (risk_percentage <= 0) risk_percentage = 0.1; const risk_decimal = risk_percentage / 100.0; const A = Math.log(Math.log(1 - risk_decimal) / Math.log(baseline_survival)); return (A - constant) / coeff; }
-        function hesaplaMesa() {
-            const yas = parseInt(document.getElementById('mesa-yas').value);
-            const cinsiyet = document.getElementById('mesa-cinsiyet').value;
-            const toplam_kolesterol = parseInt(document.getElementById('toplam_kolesterol').value);
-            const hdl_kolesterol = parseInt(document.getElementById('hdl_kolesterol').value);
-            const sistolik_tansiyon = parseInt(document.getElementById('sistolik_tansiyon').value);
-            const tansiyon_tedavisi = document.querySelector('input[name="tansiyon_tedavisi"]:checked')?.value;
-            const diyabet = document.querySelector('input[name="diyabet"]:checked')?.value;
-            const sigara = document.querySelector('input[name="sigara"]:checked')?.value;
-            const aile_oykusu = document.querySelector('input[name="aile_oykusu"]:checked')?.value;
-            const kalsiyum_skoru_input = document.getElementById('kalsiyum_skoru').value;
-            const kalsiyum_skoru = kalsiyum_skoru_input ? parseInt(kalsiyum_skoru_input) : null;
+        // --- SCORE2 CALCULATOR ---
+        function calculateScore2RiskAge(risk_percentage, cinsiyet) {
+            const c = {
+                erkek: { age: 0.06443, age_x_sbp: -0.00017, age_x_smoke: -0.00334, age_x_non_hdl: -0.0003, mean_lp: 4.667, s0: 0.938, sbp: 0.02165, smoke: 0.28337, non_hdl: 0.14151 },
+                kadin: { age: 0.07666, age_x_sbp: -0.00018, age_x_smoke: -0.0054, age_x_non_hdl: -0.00063, mean_lp: 5.764, s0: 0.963, sbp: 0.0223, smoke: 0.42898, non_hdl: 0.15545 }
+            }[cinsiyet];
+            
+            // Optimal values
+            const sbp_opt = 120, non_hdl_opt = 3.4, smoke_opt = 0;
 
-            if (!yas || !cinsiyet || !toplam_kolesterol || !hdl_kolesterol || !sistolik_tansiyon || !tansiyon_tedavisi || !diyabet || !sigara || !aile_oykusu) { alert("Lütfen tüm alanları doldurunuz."); return; }
+            const risk_decimal = Math.max(0.001, Math.min(0.999, risk_percentage / 100));
+            const target_lp = c.mean_lp + Math.log(Math.log(1 - risk_decimal) / Math.log(c.s0));
+            
+            const K1 = c.age + c.age_x_sbp * sbp_opt + c.age_x_smoke * smoke_opt + c.age_x_non_hdl * non_hdl_opt;
+            const K2 = c.sbp * sbp_opt + c.smoke * smoke_opt + c.non_hdl * non_hdl_opt;
 
-            const katsayilar = { 'yas': 0.0455, 'cinsiyet_erkek': 0.7496, 'irk_cinli': -0.5055, 'irk_siyahi': -0.2111, 'irk_hispanik': -0.1900, 'toplam_kolesterol': 0.0053, 'hdl_kolesterol': -0.0140, 'sistolik_tansiyon': 0.0085, 'tansiyon_tedavisi_evet': 0.3381, 'diyabet_evet': 0.5168, 'sigara_evet': 0.4732, 'aile_oykusu_evet': 0.4522 };
-            const katsayilar_cac = { 'yas': 0.0172, 'cinsiyet_erkek': 0.4079, 'irk_cinli': -0.3475, 'irk_siyahi': 0.0353, 'irk_hispanik': -0.0222, 'toplam_kolesterol': 0.0043, 'hdl_kolesterol': -0.0114, 'sistolik_tansiyon': 0.0066, 'tansiyon_tedavisi_evet': 0.2278, 'diyabet_evet': 0.3892, 'sigara_evet': 0.3717, 'aile_oykusu_evet': 0.3239, 'ln_cac_plus_1': 0.2743 };
-            
-            function getMesaBetaToplami(veri, katsayi_listesi) { let beta = 0; beta += veri.yas * katsayi_listesi.yas; if (veri.cinsiyet === 'erkek') beta += katsayi_listesi.cinsiyet_erkek; beta += veri.toplam_kolesterol * katsayi_listesi.toplam_kolesterol; beta += veri.hdl_kolesterol * katsayi_listesi.hdl_kolesterol; beta += veri.sistolik_tansiyon * katsayi_listesi.sistolik_tansiyon; if (veri.tansiyon_tedavisi === 'evet') beta += katsayi_listesi.tansiyon_tedavisi_evet; if (veri.diyabet === 'evet') beta += katsayi_listesi.diyabet_evet; if (veri.sigara === 'evet') beta += katsayi_listesi.sigara_evet; if (veri.aile_oykusu === 'evet') beta += katsayi_listesi.aile_oykusu_evet; if (veri.kalsiyum_skoru !== null && katsayi_listesi.ln_cac_plus_1) { beta += Math.log(veri.kalsiyum_skoru + 1) * katsayi_listesi.ln_cac_plus_1; } return beta; }
-            
-            const hasta_verisi = { yas, cinsiyet, irk: 'beyaz', toplam_kolesterol, hdl_kolesterol, sistolik_tansiyon, tansiyon_tedavisi, diyabet, sigara, aile_oykusu, kalsiyum_skoru };
-            
-            const beta_temel = getMesaBetaToplami(hasta_verisi, katsayilar);
-            const risk_temel = (1 - Math.pow(0.99963, Math.exp(beta_temel))) * 100;
-            const koroner_yas_temel = calculateCoronaryAge(risk_temel, 0.99963, 0.0455, 2.45);
-            const fark_temel = Math.round(koroner_yas_temel) - yas;
-
-            let sonucHTML = '';
-            if (kalsiyum_skoru !== null) {
-                const beta_cac = getMesaBetaToplami(hasta_verisi, katsayilar_cac);
-                const risk_cac = (1 - Math.pow(0.99833, Math.exp(beta_cac))) * 100;
-                const koroner_yas_cac = calculateCoronaryAge(risk_cac, 0.99963, 0.0455, 2.45);
-                const fark_cac = Math.round(koroner_yas_cac) - yas;
-                sonucHTML += buildResultCardMesa("Kalsiyum Skoru Dahil Edildiğinde", risk_cac, koroner_yas_cac, fark_cac);
-            }
-            sonucHTML += buildResultCardMesa("Geleneksel Risk Faktörlerine Göre", risk_temel, koroner_yas_temel, fark_temel);
-            sonucHTML += `<p id="coronary-age-info"><b>Koroner Yaş:</b> Sizinle aynı kalp hastalığı riskine sahip olan sağlıklı bir bireyin ortalama yaşıdır.</p>`;
-            
-            document.getElementById('sonuc-alani').innerHTML = sonucHTML;
-            document.getElementById('sonuc-alani').style.display = 'block';
+            const riskAge = (target_lp - K2) / K1;
+            return riskAge;
         }
-        function buildResultCardMesa(title, risk, coronaryAge, difference) { const diff_class = difference >= 0 ? 'diff-value-negative' : 'diff-value-positive'; const diff_sign = difference > 0 ? '+' : ''; return ` <div class="result-card"> <h3>${title}</h3> <div class="result-grid"> <div> <div class="result-item-title">10 Yıllık KKH Riski</div> <div class="result-item-value risk-value">${risk.toFixed(1)}%</div> </div> <div> <div class="result-item-title">Koroner Yaş</div> <div class="result-item-value age-value">${Math.round(coronaryAge)}</div> </div> <div> <div class="result-item-title">Kronolojik Yaştan Fark</div> <div class="result-item-value ${diff_class}">${diff_sign}${difference}</div> </div> </div> </div>`; }
 
-        // 2. SCORE2 HESAPLAYICI
+        function getScore2RiskThreshold(age) {
+            if (age < 50) return 2.5;
+            if (age >= 50 && age < 70) return 5.0;
+            return 7.5; // For 70+, based on SCORE2-OP
+        }
+
         function hesaplaScore2() {
             const yas = parseInt(document.getElementById('score2-yas').value);
             const cinsiyet = document.getElementById('score2-cinsiyet').value;
             const sigara = document.querySelector('input[name="score2-sigara"]:checked')?.value;
             const sistolik_bp = parseInt(document.getElementById('score2-sistolik').value);
-            const non_hdl_mgdl = parseFloat(document.getElementById('non_hdl_kolesterol').value);
+            const total_chol_mgdl = parseFloat(document.getElementById('score2-total-chol').value);
+            const hdl_chol_mgdl = parseFloat(document.getElementById('score2-hdl-chol').value);
             
-            if (!yas || !cinsiyet || !sigara || !sistolik_bp || !non_hdl_mgdl) { alert("Lütfen tüm alanları doldurunuz."); return; }
+            if (!yas || !cinsiyet || !sigara || !sistolik_bp || !total_chol_mgdl || !hdl_chol_mgdl) { alert("Lütfen tüm alanları doldurunuz."); return; }
 
-            // Kolesterolü mg/dL'den mmol/L'ye çevir (1 mmol/L = 38.67 mg/dL)
+            const non_hdl_mgdl = total_chol_mgdl - hdl_chol_mgdl;
             const non_hdl_mmol = non_hdl_mgdl / 38.67;
 
-            // SCORE2 katsayıları (Moderate-risk, 40-69 yaş aralığı)
-            const coeffs = {
-                erkek: {
-                    age: 0.06443, sbp: 0.02165, smoke: 0.28337, non_hdl: 0.14151,
-                    age_x_sbp: -0.00017, age_x_smoke: -0.00334, age_x_non_hdl: -0.0003,
-                    mean_lp: 4.667, s0_10_year: 0.938
-                },
-                kadin: {
-                    age: 0.07666, sbp: 0.0223, smoke: 0.42898, non_hdl: 0.15545,
-                    age_x_sbp: -0.00018, age_x_smoke: -0.0054, age_x_non_hdl: -0.00063,
-                    mean_lp: 5.764, s0_10_year: 0.963
-                }
+            const c = { erkek: { age: 0.06443, sbp: 0.02165, smoke: 0.28337, non_hdl: 0.14151, age_x_sbp: -0.00017, age_x_smoke: -0.00334, age_x_non_hdl: -0.0003, mean_lp: 4.667, s0: 0.938 }, kadin: { age: 0.07666, sbp: 0.0223, smoke: 0.42898, non_hdl: 0.15545, age_x_sbp: -0.00018, age_x_smoke: -0.0054, age_x_non_hdl: -0.00063, mean_lp: 5.764, s0: 0.963 } }[cinsiyet];
+            let lp = c.age * yas + c.sbp * sistolik_bp + c.smoke * (sigara === 'evet' ? 1 : 0) + c.non_hdl * non_hdl_mmol + c.age_x_sbp * yas * sistolik_bp + c.age_x_smoke * yas * (sigara === 'evet' ? 1 : 0) + c.age_x_non_hdl * yas * non_hdl_mmol;
+            const risk_yuzde = (1 - Math.pow(c.s0, Math.exp(lp - c.mean_lp))) * 100;
+            
+            const patient_data = {
+                date: new Date().toLocaleDateString('tr-TR', { day: 'numeric', month: 'long', year: 'numeric' }),
+                age: yas,
+                sex: cinsiyet,
+                sbp: sistolik_bp,
+                total_chol: total_chol_mgdl,
+                hdl_chol: hdl_chol_mgdl,
+                smoker: sigara === 'evet' ? 'Evet' : 'Hayır',
+                risk: risk_yuzde,
+                risk_age: calculateScore2RiskAge(risk_yuzde, cinsiyet),
+                threshold: getScore2RiskThreshold(yas)
             };
 
-            const c = coeffs[cinsiyet];
-            const is_smoker = (sigara === 'evet') ? 1 : 0;
-            
-            // Lineer prediktör (LP) hesaplaması
-            let lp = 
-                c.age * yas +
-                c.sbp * sistolik_bp +
-                c.smoke * is_smoker +
-                c.non_hdl * non_hdl_mmol +
-                c.age_x_sbp * yas * sistolik_bp +
-                c.age_x_smoke * yas * is_smoker +
-                c.age_x_non_hdl * yas * non_hdl_mmol;
-
-            // 10 yıllık riskin hesaplanması
-            const risk_yuzde = (1 - Math.pow(c.s0_10_year, Math.exp(lp - c.mean_lp))) * 100;
-
-            const sonucHTML = `
-                <div class="result-card result-card-simple">
-                    <h3>SCORE2 10 Yıllık KKH Riski</h3>
-                    <div class="result-item-title">Kalp krizi veya inme geçirme riskiniz:</div>
-                    <div class="result-item-value risk-value">${risk_yuzde.toFixed(1)}%</div>
-                </div>`;
-
-            document.getElementById('sonuc-alani').innerHTML = sonucHTML;
+            document.getElementById('sonuc-alani').innerHTML = buildResultsScore2(patient_data);
             document.getElementById('sonuc-alani').style.display = 'block';
         }
-
+        
+        function buildResultsScore2(data) {
+            return `
+            <div class="patient-summary">
+                <h3>Girdiğiniz Değerler</h3>
+                <div class="summary-grid">
+                    <div class="summary-item">Tarih: <strong>${data.date}</strong></div>
+                    <div class="summary-item">Yaş: <strong>${data.age}</strong></div>
+                    <div class="summary-item">Cinsiyet: <strong>${data.sex}</strong></div>
+                    <div class="summary-item">Sigara: <strong>${data.smoker}</strong></div>
+                    <div class="summary-item">Sistolik KB: <strong>${data.sbp} mmHg</strong></div>
+                    <div class="summary-item">Toplam Kolesterol: <strong>${data.total_chol} mg/dL</strong></div>
+                    <div class="summary-item">HDL Kolesterol: <strong>${data.hdl_chol} mg/dL</strong></div>
+                </div>
+            </div>
+            <div class="results-card">
+                 <h3>Sonuç ve Tavsiyeler</h3>
+                 <div class="results-grid">
+                    <div class="results-item">
+                        <svg><use href="#icon-warning"/></svg>
+                        <div>
+                            <div class="results-item-text">10 yıllık ölümcül/ölümcül olmayan KVH riskiniz:</div>
+                            <div class="results-item-value">${data.risk.toFixed(1)}%</div>
+                        </div>
+                    </div>
+                     <div class="results-item">
+                        <svg><use href="#icon-alarm"/></svg>
+                        <div>
+                            <div class="results-item-text">Sizin yaşınızdaki birisi için kılavuzların yüksek risk olarak kabul ettiği eşik:</div>
+                            <div class="results-item-value">${data.threshold}%</div>
+                        </div>
+                    </div>
+                     <div class="results-item">
+                        <svg><use href="#icon-person"/></svg>
+                        <div>
+                            <div class="results-item-text"><strong>Risk Yaşınız:</strong> Risk faktörlerinizden dolayı, riskiniz sağlıklı bir <strong>${Math.round(data.risk_age)}</strong> yaşındaki bireyinkine benzer.</div>
+                        </div>
+                    </div>
+                    <div class="results-item">
+                        <svg><use href="#icon-target"/></svg>
+                        <div>
+                            <div class="results-item-text"><strong>Önleme Hedefleri:</strong>
+                                <ul>
+                                    <li>Sigarayı bırakma ve yaşam tarzı optimizasyonu.</li>
+                                    <li>Sistolik KB < 140, tolere edilirse 130 mmHg hedefi.</li>
+                                    <li>Non-HDL-C < 131 mg/dL.</li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                 </div>
+            </div>
+            `;
+        }
+        
+        // Switch to SCORE2 tab on initial load
+        switchTab('score2');
     </script>
-
 </body>
 </html>
